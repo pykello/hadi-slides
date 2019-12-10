@@ -1,20 +1,24 @@
 #lang slideshow
 
 (require pict
-         ppict/slideshow2)
+         ppict/slideshow2
+         slideshow/code)
 
 (provide load-imagepack
-         introduce)
+         introduce
+         codeblock
+         cols)
 
 ;; global defaults
 (current-main-font "Fira Sans")
 (set-margin! 50)
+(current-code-font "Cascadia Code")
+(get-current-code-font-size (λ () 20))
 
 ;; load-imagepack
 (define (load-imagepack base images)
   (define (load-image file)
     (define full-path (path->string (build-path base file)))
-    (displayln full-path)
     (bitmap full-path))
   (define (image-assoc img)
     (define name (car img))
@@ -35,6 +39,34 @@
                   `((microsoft-logo . "microsoft-logo.png")
                     (citus-logo . "citus-logo.png")
                     (magnetic-drum . "magnetic-drum.jpg"))))
+
+(define (codeblock lines)
+  (codeblock-pict
+   (string-join lines "\n")))
+
+;; multi-column
+(struct cell (content width superimpose))
+(define cols
+  (λ _cells
+    (define height #f)
+    (define cells
+      (map (λ (c)
+             (cond [(cell? c) c]
+                   [else (cell c 1 lt-superimpose)]))
+           _cells))
+    (define real-height
+      (cond [(number? height) height]
+            [else (apply max (map (λ (c) (pict-height (cell-content c))) cells))]))
+    (define total-width
+      (apply + (map cell-width cells)))
+    (define (cell->pict c)
+      (let* ([w (/ (* client-w (cell-width c)) total-width)]
+             [h real-height]
+             [rect (ghost (rectangle w h))]
+             [superimpose (cell-superimpose c)])
+        (superimpose rect (cell-content c))))
+    (apply hc-append (map cell->pict cells))))
+
 ;;
 ;; slide templates
 ;;
