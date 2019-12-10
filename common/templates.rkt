@@ -11,7 +11,8 @@
 
 ;; global defaults
 (current-main-font "Fira Sans")
-(set-margin! 50)
+(set-margin! 64)
+(current-gap-size 24)
 (current-code-font "Cascadia Code")
 (get-current-code-font-size (λ () 20))
 
@@ -40,9 +41,10 @@
                     (citus-logo . "citus-logo.png")
                     (magnetic-drum . "magnetic-drum.jpg"))))
 
-(define (codeblock lines)
+(define codeblock
+  (λ lines
   (codeblock-pict
-   (string-join lines "\n")))
+   (string-join lines "\n"))))
 
 ;; multi-column
 (struct cell (content width superimpose))

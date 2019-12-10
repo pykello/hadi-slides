@@ -4,17 +4,23 @@
 
 ;;(introduce `("Introduction to " "Query Planning" "") "Hadi Moshayedi")
 
-(define cb1 (codeblock
-             `("SELECT"
-               "  a, b"
-               "FROM t != x;")))
-(define cb2 (codeblock `("abc")))
-
-
 (slide
- #:title "Sample code"
- (para 
- (cols cb1 cb2)))
+ #:title "Motivation"
+ (codeblock
+  "postgres=# CREATE TABLE users(id int, firstname text, lastname text);"
+  "postgres=# INSERT INTO users VALUES (1, 'SomeName', 'SomeLastName'),"
+  "                                    (2, 'Person2', 'AbCdEfGh');"
+  "postgres=# CREATE INDEX ON users USING BTREE(id);"
+  "postgres=# SELECT count(*) FROM users;"
+  " count "
+  "-------"
+  "     1"
+  "(1 row)")
+ (item "How is data stored?")
+ (item "How are queries executed?")
+ (item "How is concurrency handled?")
+ (item "How does it recover from crashes?")
+ (item "..."))
 
 (slide
  #:title "How to Say Hello"
