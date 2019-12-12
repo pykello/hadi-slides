@@ -1,13 +1,16 @@
 #lang slideshow
 
 (require pict
-         ppict/slideshow2
+         pict/convert
+         ppict/2
          slideshow/code)
 
 (provide load-imagepack
          introduce
          codeblock
-         cols)
+         left-aligned
+         cols
+         attention)
 
 ;; global defaults
 (current-main-font "Fira Sans")
@@ -43,8 +46,30 @@
 
 (define codeblock
   (λ lines
-  (codeblock-pict
-   (string-join lines "\n"))))
+    (codeblock-pict
+     (string-join lines "\n"))))
+
+(define left-aligned
+  (λ elems
+    (define (pad w p superimpose)
+      (superimpose (ghost (rectangle w (pict-height p)))
+                   p))
+    (let* ([picts (filter pict-convertible? elems)]
+           [ws (map pict-width picts)]
+           [w (apply max ws)]
+           [f (λ (e) (cond [(pict-convertible? e) (pad w e lc-superimpose)]
+                           [else e]))])
+      (list (map f elems)))))
+
+(define (attention message #:font-size [fontsize 40])
+  (pslide #:go (coord 0.5 0.5)
+          (cc-superimpose
+           (filled-rectangle
+            client-w 300 #:color "firebrick")
+           (colorize
+            (text message
+                  "Berenis ADF Pro, Bold" fontsize)
+            "white"))))
 
 ;; multi-column
 (struct cell (content width superimpose))
